@@ -3,12 +3,18 @@ from datetime import datetime
 import logging
 import functools
 import time
+import json
+from collections import namedtuple
 
 
 import bottle
-import schedule
+import schedule as schedule
 
 log = logging.getLogger('cronen')
+
+trigger = schedule
+
+RunResult = namedtuple('RunResult', ('start_time', 'end_time', 'error'))
 
 class ScheduledJob(object):
 	"""
@@ -19,7 +25,7 @@ class ScheduledJob(object):
 		self.name = name
 		self.func = func
 		self.trigger = trigger
-		self.last_run = (None, None, None)
+		self.last_run = RunResult('Never', 'Never', None)
 
 	def run(self):
 		try:
@@ -27,16 +33,24 @@ class ScheduledJob(object):
 			log.info('Running %s', self.name)
 			self.func()
 			end_time = datetime.now()
-			self.last_run = (start_time, end_time, None)
+			self.last_run = RunResult(
+				self.format_timestamp(start_time), 
+				self.format_timestamp(end_time), 
+				None)
 		except Exception as e:
 			log.exception('Error running job')
 			#TODO: add error email support?
 			end_time = datetime.now()
-			self.last_run = (start_time, end_time, e)
-
+			self.last_run = RunResult(
+				self.format_timestamp(start_time), 
+				self.format_timestamp(end_time), 
+				str(e))
 		finally:
 			print 'Done running {}'.format(self.name)
 
+	@staticmethod
+	def format_timestamp(timestamp):
+		return timestamp.isoformat()
 	
 
 class Cronen(object):
@@ -58,7 +72,7 @@ class Cronen(object):
 	def _start_scheduler(self):
 		# TODO: add scheduling configuration
 		for job in self.jobs.values():
-			schedule.every(5).seconds.do(job.run)
+			job.trigger.do(job.run)
 		
 		self.scheduler = threading.Thread(
 			target=self._scheduler_loop,
@@ -81,8 +95,14 @@ class Cronen(object):
 			
 		@bottle.route('/status')
 		def status():
-			return "\n".join(
-				"Job: {}, last run: {}".format(j.name, j.last_run) for j in self.jobs.values()
+			bottle.response.content_type = 'application/json'
+
+			return json.dumps(
+					{job.name:self.run_result_to_dict(job.last_run) for job in self.jobs.values()}
 				)
 
 		bottle.run(host='localhost', port=self.port)
+
+	@staticmethod
+	def run_result_to_dict(run_result):
+		return run_result._asdict()
