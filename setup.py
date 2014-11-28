@@ -8,7 +8,7 @@ setup(name='cronen',
       author='Barak Schiller',
       author_email='bschiller@gmail.com',
       packages=find_packages(where='src'),
-      requires=[
+      install_requires=[
             'bottle',
             'schedule',
             ]
