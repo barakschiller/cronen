@@ -10,4 +10,8 @@ setup(name='cronen',
       author='Barak Schiller',
       author_email='bschiller@gmail.com',
       packages=setuptools.find_packages(where='src'),
+      requires=[
+            'bottle',
+            'schedule',
+            ]
      )
