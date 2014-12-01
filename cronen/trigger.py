@@ -1,4 +1,5 @@
 import datetime
+import threading
 from abc import ABCMeta, abstractmethod
 
 
@@ -7,15 +8,18 @@ class Trigger(object):
 
     def __init__(self):
         self.next_run = None
+        self.lock = threading.RLock()
 
     def fire_manually(self, ts):
-        self.next_run = ts
+        with self.lock:
+            self.next_run = ts
 
     def should_fire(self, ts):
         return ts >= self.next_run
 
     def reset(self, ts):
-        self.next_run = self.calculate_next_run(ts)
+        with self.lock:
+            self.next_run = self.calculate_next_run(ts)
 
     @abstractmethod
     def calculate_next_run(self, ts):

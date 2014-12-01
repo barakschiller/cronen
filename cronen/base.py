@@ -8,11 +8,8 @@ from cronen.scheduler import Scheduler, ScheduledJob
 
 log = logging.getLogger('cronen')
 
-class Cronen(object):
 
-    @staticmethod
-    def null_error_handler(job, exception):
-        pass
+class Cronen(object):
 
     def __init__(self, port, error_handler=null_error_handler):
         """
@@ -25,6 +22,10 @@ class Cronen(object):
         self.error_handler = error_handler
         self.scheduler = Scheduler()
         self.scheduler_thread = None
+
+    @staticmethod
+    def null_error_handler(job, exception):
+        pass
 
     def add_job(self, name, func, trigger):
         job = ScheduledJob(name, func, trigger, self.error_handler)
