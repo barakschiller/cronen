@@ -1,7 +1,7 @@
 from mock import Mock
 from nose.tools import assert_true, assert_equal
 
-from scheduler import ScheduledJob
+from cronen.scheduler import ScheduledJob
 
 
 ERROR_MESSAGE = 'error'

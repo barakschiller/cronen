@@ -14,7 +14,7 @@ def null_error_handler(job, exception):
 
 class Cronen(object):
 
-    def __init__(self, port, error_handler=Cronen.null_error_handler):
+    def __init__(self, port, error_handler=null_error_handler):
         """
         :param port port to be used for web server
         :param error_handler error handler to be called in case of job failure
