@@ -33,5 +33,5 @@ cron.add_job(
   trigger=cronen.trigger.PeriodicTrigger(timedelta(minutes=10))
 )
 
-cron.stat()
+cron.start()
 ```
