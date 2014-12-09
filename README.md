@@ -35,3 +35,13 @@ cron.add_job(
 
 cron.start()
 ```
+
+# Web interface
+`/status`
+ > returns a JSON indicating the current status for each job (last run time, errors)
+ 
+`/run/<job name>`
+ > Schedule the given job to run now.
+
+`/`
+ > A very simple HTML interface to view job status, featuring a run button for each job!
