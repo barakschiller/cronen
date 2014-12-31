@@ -46,9 +46,12 @@ class ScheduledJob(object):
         try:
             self.func()
         except Exception as e:
-            log.exception('Error running job %s', self.name)
+            log.exception('Job %s failed', self.name)
             error = e
-            self.error_handler(self, e)
+            try:
+                self.error_handler(self, e)
+            except Exception:
+                log.exception('Error handler failed')
         finally:
             end_time = datetime.datetime.now()
             log.info('Done running %s', self.name)
