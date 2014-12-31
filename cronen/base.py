@@ -71,7 +71,7 @@ class Cronen(object):
             return bottle.template(WEB_STATUS_TEMPLATE, jobs=self.jobs.values())
 
 
-        bottle.run(host='localhost', port=self.port)
+        bottle.run(host='0.0.0.0', port=self.port)
 
     @staticmethod
     def run_result_to_dict(run_result):
