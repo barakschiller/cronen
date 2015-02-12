@@ -1,7 +1,7 @@
 from nose.tools import assert_equal
 import datetime
 
-from cronen.trigger import DailyTrigger, WeeklyTrigger
+from cronen.trigger import DailyTrigger, WeeklyTrigger, ManualOnlyTrigger
 
 
 def test_daily_trigger_schedule_for_today():
@@ -32,4 +32,9 @@ def test_when_too_late_weekly_trigger_schedule_for_next_week():
     assert_equal(datetime.datetime(2014, 12, 8, hour=6), next_run)
 
 
+def test_manual_only_trigger_next_run_is_always_datetime_max():
 
+    assert_equal(
+        ManualOnlyTrigger().calculate_next_run(ts=datetime.datetime.min),
+        datetime.datetime.max
+    )
