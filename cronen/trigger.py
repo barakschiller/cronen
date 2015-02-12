@@ -74,3 +74,9 @@ class WeeklyTrigger(Trigger):
             return running_time_this_week + datetime.timedelta(days=7)
         else:
             return running_time_this_week
+
+
+class ManualOnlyTrigger(Trigger):
+
+    def calculate_next_run(self, ts):
+        return datetime.datetime.max
