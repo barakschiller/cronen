@@ -6,6 +6,7 @@ setup(name='cronen',
       description='Micro cron library',
       author='Barak Schiller',
       author_email='bschiller@gmail.com',
+      url='https://github.com/barakschiller/cronen',
       packages=find_packages(),
       install_requires=[
             'bottle',
