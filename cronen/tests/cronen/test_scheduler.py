@@ -25,7 +25,7 @@ class TestScheduler(object):
         job.run_if_needed(ANY_TIMESTAMP)
 
         assert_true(mock_error_handler.called)
-        assert_equal(job.last_run.error, ERROR_MESSAGE)
+        assert_equal(job.state.error, ERROR_MESSAGE)
 
     def test_when_error_handler_raised_exception_it_is_caught(self):
         job = ScheduledJob(name="job", func=raise_exception, trigger=self.always_fire_trigger,
@@ -33,4 +33,4 @@ class TestScheduler(object):
 
         job.run_if_needed(ANY_TIMESTAMP)
 
-        assert_equal(job.last_run.error, ERROR_MESSAGE)
+        assert_equal(job.state.error, ERROR_MESSAGE)

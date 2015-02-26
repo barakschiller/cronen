@@ -63,7 +63,7 @@ class Cronen(object):
             bottle.response.content_type = 'application/json'
 
             return json.dumps(
-                {job.name: self.run_result_to_dict(job.last_run) for job in self.jobs.values()}
+                {job.name: self.state_to_dict(job.state) for job in self.jobs.values()}
             )
 
         @bottle.route('/')
@@ -74,8 +74,8 @@ class Cronen(object):
         bottle.run(host='0.0.0.0', port=self.port)
 
     @staticmethod
-    def run_result_to_dict(run_result):
-        return run_result._asdict()
+    def state_to_dict(job_state):
+        return job_state._asdict()
 
 
 
@@ -85,17 +85,19 @@ WEB_STATUS_TEMPLATE = """
 <table id="jobs-table", border=1>
 <tr>
     <th>Name</th>
-    <th>Last start time</th>
-    <th>Last end time</th>
+    <th>Running?</th>
+    <th>Start time</th>
+    <th>End time</th>
     <th>Error</th>
     <th>Run</th>
 </tr>
 % for job in jobs:
 <tr>
     <td>{{job.name}}</td>
-    <td>{{job.last_run.start_time}}</td>
-    <td>{{job.last_run.end_time}}</td>
-    <td>{{job.last_run.error}}</td>
+    <td>{{job.state.running}}</td>
+    <td>{{job.state.start_time}}</td>
+    <td>{{job.state.end_time}}</td>
+    <td>{{job.state.error}}</td>
     <td><button onclick="xmlhttp = new XMLHttpRequest(); xmlhttp.open('GET', 'run/{{job.name}}', true); xmlhttp.send();">Run</button></td>
 </tr>
 % end

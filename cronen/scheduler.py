@@ -24,10 +24,10 @@ class Scheduler(object):
         job.schedule_once(now)
 
 
-RunResult = namedtuple('RunResult', ('start_time', 'end_time', 'error'))
-
-
 class ScheduledJob(object):
+    State = namedtuple('State', ('running', 'start_time', 'end_time', 'error'))
+    INITIAL_STATE = State(running=False, start_time='', end_time='', error=None)
+
     """
     A scheduled job with a web monitoring interface.
     :param func The job function (no parameters allowed, you can use functools to bind parameters).
@@ -36,13 +36,14 @@ class ScheduledJob(object):
         self.name = name
         self.func = func
         self.trigger = trigger
-        self.last_run = RunResult('Never', 'Never', None)
+        self.state = self.INITIAL_STATE
         self.error_handler = error_handler
 
     def _run(self):
         error = None
         log.info('Running %s', self.name)
         start_time = datetime.datetime.now()
+        self.state = self.State(running=True, start_time=self.format_timestamp(start_time), end_time='', error=None)
         try:
             self.func()
         except Exception as e:
@@ -55,10 +56,12 @@ class ScheduledJob(object):
         finally:
             end_time = datetime.datetime.now()
             log.info('Done running %s', self.name)
-            self.last_run = RunResult(
-                self.format_timestamp(start_time),
-                self.format_timestamp(end_time),
-                str(error))
+            self.state = self.State(
+                running=False,
+                start_time=self.format_timestamp(start_time),
+                end_time=self.format_timestamp(end_time),
+                error=str(error)
+            )
 
     def run_if_needed(self, ts):
         if self.trigger.should_fire(ts):
